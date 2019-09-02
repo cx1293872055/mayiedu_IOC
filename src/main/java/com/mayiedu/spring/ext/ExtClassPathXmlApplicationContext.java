@@ -4,6 +4,7 @@ package com.mayiedu.spring.ext;
 import com.mayiedu.spring.exttannotation.ExtService;
 import org.apache.commons.lang.StringUtils;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -11,7 +12,7 @@ public class ExtClassPathXmlApplicationContext {
 
     private String packageName;
 
-    private ConcurrentHashMap<String,Class<?>> beans = null;
+    private ConcurrentHashMap<String,Object> beans = null;
 
     public ExtClassPathXmlApplicationContext(String packageName) throws Exception {
         this.packageName = packageName;
@@ -31,12 +32,17 @@ public class ExtClassPathXmlApplicationContext {
 //        }
         //3,使用java的反射机制进行初始化
     }
-
+//依赖注入原理
+    public void attriAssign(Class<?> classInfo) {
+        Field[] fields = classInfo.getDeclaredFields();
+        for (Field field : fields) {
+        }
+    }
     public Object getBean(String beanId) throws Exception {
         if (StringUtils.isEmpty(beanId)) {
             throw new Exception("beanId参数为空");
         }
-        Class<?> classInfo = beans.get(beanId);
+        Object classInfo = beans.get(beanId);
         if (classInfo == null) {
             throw new Exception("class not find");
         }
@@ -48,7 +54,7 @@ public class ExtClassPathXmlApplicationContext {
         return classInfo.newInstance();
 
     }
-    public ConcurrentHashMap<String,Class<?>> finClassExisAnnotation(List<Class<?>> classes) {
+    public ConcurrentHashMap<String,Object> finClassExisAnnotation(List<Class<?>> classes) {
         for (Class<?> classInfo : classes) {
             ExtService annotation = classInfo.getAnnotation(ExtService.class);
             if (annotation != null) {
